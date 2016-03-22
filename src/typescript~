@@ -1,0 +1,584 @@
+Script started on Tuesday 23 February 2016 11:03:09 PM MST
+]0;laxmikant@laxmikant-HP-Pavilion-g6-Notebook-PC: ~/workspace/minibase/srclaxmikant@laxmikant-HP-Pavilion-g6-Notebook-PC:~/workspace/minibase/src$ make test
+cd tests; make bmtest dbtest; whoami; make hftest bttest indextest
+make[1]: Entering directory '/home/laxmikant/workspace/minibase/src/tests'
+/usr/lib/jvm/java-8-oracle/bin/javac -classpath .:.. TestDriver.java BMTest2.java
+/usr/lib/jvm/java-8-oracle/bin/java  -classpath .:.. tests.BMTest2
+
+Running Buffer Management tests....
+Replacer: LRUK
+
+
+  Test 1 does simple test on buffer using theFIFOalgorithmmanager operations:
+Replacer: FIFO
+
+  - Allocate a bunch of new pages
+  - Write something on each one
+  - Read that something back from each one
+   (because we're buffering, this is where most of the writes happen)
+  - Free the pages again
+  Test 1 completed successfully.
+
+  Test 1 does simple test on buffer using theLIFOalgorithmmanager operations:
+Replacer: LIFO
+
+  - Allocate a bunch of new pages
+  - Write something on each one
+  - Read that something back from each one
+   (because we're buffering, this is where most of the writes happen)
+  - Free the pages again
+  Test 1 completed successfully.
+
+  Test 1 does simple test on buffer using theLRUKalgorithmmanager operations:
+Replacer: LRUK
+
+  - Allocate a bunch of new pages
+  - Write something on each one
+  - Read that something back from each one
+   (because we're buffering, this is where most of the writes happen)
+  - Free the pages again
+  Test 1 completed successfully.
+
+  Test 2 exercises some illegal buffer manager operations:FIFO
+Replacer: FIFO
+
+  - Try to pin more pages than there are frames
+*** Pinning too many pages
+  --> Failed as expected 
+
+  - Try to free a doubly-pinned page
+*** Freeing a pinned page
+  --> Failed as expected 
+
+  - Try to unpin a page not in the buffer pool
+*** Unpinning a page not in the buffer pool
+  --> Failed as expected 
+
+  Test 2 completed successfully.
+
+  Test 2 exercises some illegal buffer manager operations:LIFO
+Replacer: LIFO
+
+  - Try to pin more pages than there are frames
+*** Pinning too many pages
+  --> Failed as expected 
+
+  - Try to free a doubly-pinned page
+*** Freeing a pinned page
+  --> Failed as expected 
+
+  - Try to unpin a page not in the buffer pool
+*** Unpinning a page not in the buffer pool
+  --> Failed as expected 
+
+  Test 2 completed successfully.
+
+  Test 2 exercises some illegal buffer manager operations:LRUK
+Replacer: LRUK
+
+  - Try to pin more pages than there are frames
+*** Pinning too many pages
+  --> Failed as expected 
+
+  - Try to free a doubly-pinned page
+*** Freeing a pinned page
+  --> Failed as expected 
+
+  - Try to unpin a page not in the buffer pool
+*** Unpinning a page not in the buffer pool
+  --> Failed as expected 
+
+  Test 2 completed successfully.
+
+  Test 3 exercises some of the internals of the buffer managerFIFO
+Replacer: FIFO
+
+  - Allocate and dirty some new pages, one at a time, and leave some pinned
+  - Read the pages
+  Test 3 completed successfully.
+
+  Test 3 exercises some of the internals of the buffer managerLIFO
+Replacer: LIFO
+
+  - Allocate and dirty some new pages, one at a time, and leave some pinned
+  - Read the pages
+  Test 3 completed successfully.
+
+  Test 3 exercises some of the internals of the buffer managerLRUK
+Replacer: LRUK
+
+  - Allocate and dirty some new pages, one at a time, and leave some pinned
+  - Read the pages
+  Test 3 completed successfully.
+
+  Test 4 
+Replacer: LRUK
+
+- Read the pages
+  Test 4 completed successfully.
+
+...Buffer Management tests completely successfully.
+
+/usr/lib/jvm/java-8-oracle/bin/javac -classpath .:.. TestDriver.java DBTest.java
+/usr/lib/jvm/java-8-oracle/bin/java  -classpath .:.. tests.DBTest
+
+Running Disk Space Management tests....
+
+Replacer: Clock
+
+
+  Test 1 creates a new database and does some tests of normal operations:
+  - Add some file entries
+  - Allocate a run of pages
+  - Write something on some of them
+  - Deallocate the rest of them
+  Test 1 completed successfully.
+
+  Test 2 opens the database created in test 1 and does some further tests:
+  - Delete some of the file entries
+  - Look up file entries that should still be there
+  - Read stuff back from pages we wrote in test 1
+  Test 2 completed successfully.
+
+  Test 3 tests for some error conditions:
+  - Look up a deleted file entry
+**** Looking up a deleted file entry
+  --> Failed as expected 
+
+  - Try to delete a deleted entry again
+**** Delete a deleted file entry again
+  --> Failed as expected 
+
+  - Try to delete a nonexistent file entry
+**** Deleting a nonexistent file entry
+  --> Failed as expected 
+
+  - Look up a nonexistent file entry
+**** Looking up a nonexistent file entry
+  --> Failed as expected 
+
+  - Try to add a file entry that's already there
+**** Adding a duplicate file entry
+  --> Failed as expected 
+
+  - Try to add a file entry whose name is too long
+**** Adding a file entry with too long a name
+  --> Failed as expected 
+
+  - Try to allocate a run of pages that's too long 
+**** Allocating a run that's too long
+  --> Failed as expected 
+
+  - Try to allocate a negative run of pages 
+**** Allocating a negative run
+  --> Failed as expected 
+
+  - Try to deallocate a negative run of pages 
+**** Deallocating a negative run
+  --> Failed as expected 
+
+  Test 3 completed successfully.
+
+  Test 4 tests some boundary conditions.
+    (These tests are very implementation-specific.)
+  - Make sure no pages are pinned
+  - Allocate all pages remaining after DB overhead is accounted for
+  - Attempt to allocate one more page
+**** Allocating one additional page
+  --> Failed as expected 
+
+  - Free some of the allocated pages
+  - Allocate some of the just-freed pages
+  - Free two continued run of the allocated pages
+  - Allocate back number of pages equal to the just freed pages
+
+  - Add enough file entries that the directory must surpass a page
+  - Make sure that the directory has taken up an extra page: try to
+    allocate more pages than should be available
+**** Allocating more pages than are now available
+   --> Failed as expected 
+
+  - At this point, all pages should be claimed.  Try to allocateone more.
+**** Allocating one more page than there is
+   --> Failed as expected 
+
+  - Free the last two pages: this tests a boundary condition in the space map.
+  Test 4 completed successfully.
+
+...Disk Space Management tests completely successfully.
+
+make[1]: Leaving directory '/home/laxmikant/workspace/minibase/src/tests'
+laxmikant
+make[1]: Entering directory '/home/laxmikant/workspace/minibase/src/tests'
+/usr/lib/jvm/java-8-oracle/bin/javac -classpath .:.. TestDriver.java HFTest.java
+/usr/lib/jvm/java-8-oracle/bin/java  -classpath .:.. tests.HFTest
+
+Running Heap File tests....
+
+Replacer: Clock
+
+
+  Test 1: Insert and scan fixed-size records
+
+  - Create a heap file
+
+  - Add 100 records to the file
+
+  - Scan the records just inserted
+
+  Test 1 completed successfully.
+
+
+  Test 2: Delete fixed-size records
+
+  - Open the same heap file as test 1
+
+  - Delete half the records
+
+  - Scan the remaining records
+
+  Test 2 completed successfully.
+
+
+  Test 3: Update fixed-size records
+
+  - Open the same heap file as tests 1 and 2
+
+  - Change the records
+
+  - Check that the updates are really there
+
+  Test 3 completed successfully.
+
+
+  Test 4: Test some error conditions
+
+  - Try to change the size of a record
+
+**** Shortening a record
+  --> Failed as expected 
+
+**** Lengthening a record
+  --> Failed as expected 
+
+  - Try to insert a record that's too long
+
+**** Inserting a too-long record
+  --> Failed as expected 
+
+  Test 4 completed successfully.
+
+
+...Heap File tests completely successfully.
+
+/usr/lib/jvm/java-8-oracle/bin/javac -classpath .:.. TestDriver.java BTTest.java
+/usr/lib/jvm/java-8-oracle/bin/java  -classpath .:.. tests.BTTest
+Replacer: Clock
+
+
+Running  tests....
+
+ ***************** The file name is: AAA0  **********
+-------------------------- MENU ------------------
+
+
+[0]   Naive delete (new file)
+[1]   Full delete(Default) (new file)
+
+[2]   Print the B+ Tree Structure
+[3]   Print All Leaf Pages
+[4]   Choose a Page to Print
+
+           ---Integer Key (for choices [6]-[14]) ---
+
+[5]   Insert a Record
+[6]   Delete a Record
+[7]   Test1 (new file): insert n records in order
+[8]   Test2 (new file): insert n records in reverse order
+[9]   Test3 (new file): insert n records in random order
+[10]  Test4 (new file): insert n records in random order
+      and delete m records randomly
+[11]  Delete some records
+
+[12]  Initialize a Scan
+[13]  Scan the next Record
+[14]  Delete the just-scanned record
+
+           ---String Key (for choice [15]) ---
+
+[15]  Test5 (new file): insert n records in random order  
+        and delete m records randomly.
+
+[16]  Close the file
+[17]  Open which file (input an integer for the file name): 
+[18]  Destroy which file (input an integer for the file name): 
+
+[19]  Quit!
+Hi, make your choice :7
+Please input the number of keys to insert: 
+500
+ ***************** The file name is: AAA1  **********
+-------------------------- MENU ------------------
+
+
+[0]   Naive delete (new file)
+[1]   Full delete(Default) (new file)
+
+[2]   Print the B+ Tree Structure
+[3]   Print All Leaf Pages
+[4]   Choose a Page to Print
+
+           ---Integer Key (for choices [6]-[14]) ---
+
+[5]   Insert a Record
+[6]   Delete a Record
+[7]   Test1 (new file): insert n records in order
+[8]   Test2 (new file): insert n records in reverse order
+[9]   Test3 (new file): insert n records in random order
+[10]  Test4 (new file): insert n records in random order
+      and delete m records randomly
+[11]  Delete some records
+
+[12]  Initialize a Scan
+[13]  Scan the next Record
+[14]  Delete the just-scanned record
+
+           ---String Key (for choice [15]) ---
+
+[15]  Test5 (new file): insert n records in random order  
+        and delete m records randomly.
+
+[16]  Close the file
+[17]  Open which file (input an integer for the file name): 
+[18]  Destroy which file (input an integer for the file name): 
+
+[19]  Quit!
+Hi, make your choice :10
+Please input the number of keys to insert: 
+100
+Please input the number of keys to delete: 
+50
+ ***************** The file name is: AAA2  **********
+-------------------------- MENU ------------------
+
+
+[0]   Naive delete (new file)
+[1]   Full delete(Default) (new file)
+
+[2]   Print the B+ Tree Structure
+[3]   Print All Leaf Pages
+[4]   Choose a Page to Print
+
+           ---Integer Key (for choices [6]-[14]) ---
+
+[5]   Insert a Record
+[6]   Delete a Record
+[7]   Test1 (new file): insert n records in order
+[8]   Test2 (new file): insert n records in reverse order
+[9]   Test3 (new file): insert n records in random order
+[10]  Test4 (new file): insert n records in random order
+      and delete m records randomly
+[11]  Delete some records
+
+[12]  Initialize a Scan
+[13]  Scan the next Record
+[14]  Delete the just-scanned record
+
+           ---String Key (for choice [15]) ---
+
+[15]  Test5 (new file): insert n records in random order  
+        and delete m records randomly.
+
+[16]  Close the file
+[17]  Open which file (input an integer for the file name): 
+[18]  Destroy which file (input an integer for the file name): 
+
+[19]  Quit!
+Hi, make your choice :3
+
+
+
+---------------The B+ Tree Leaf Pages---------------
+
+**************To Print an Leaf Page ********
+Current Page ID: 22
+Left Link      : -1
+Right Link     : -1
+0 (key, [pageNo, slotNo]):   (0,  [ 0 0 ] )
+1 (key, [pageNo, slotNo]):   (4,  [ 4 4 ] )
+2 (key, [pageNo, slotNo]):   (5,  [ 5 5 ] )
+3 (key, [pageNo, slotNo]):   (6,  [ 6 6 ] )
+4 (key, [pageNo, slotNo]):   (9,  [ 9 9 ] )
+5 (key, [pageNo, slotNo]):   (10,  [ 10 10 ] )
+6 (key, [pageNo, slotNo]):   (12,  [ 12 12 ] )
+7 (key, [pageNo, slotNo]):   (14,  [ 14 14 ] )
+8 (key, [pageNo, slotNo]):   (18,  [ 18 18 ] )
+9 (key, [pageNo, slotNo]):   (21,  [ 21 21 ] )
+10 (key, [pageNo, slotNo]):   (22,  [ 22 22 ] )
+11 (key, [pageNo, slotNo]):   (24,  [ 24 24 ] )
+12 (key, [pageNo, slotNo]):   (25,  [ 25 25 ] )
+13 (key, [pageNo, slotNo]):   (27,  [ 27 27 ] )
+14 (key, [pageNo, slotNo]):   (28,  [ 28 28 ] )
+15 (key, [pageNo, slotNo]):   (29,  [ 29 29 ] )
+16 (key, [pageNo, slotNo]):   (31,  [ 31 31 ] )
+17 (key, [pageNo, slotNo]):   (32,  [ 32 32 ] )
+18 (key, [pageNo, slotNo]):   (35,  [ 35 35 ] )
+19 (key, [pageNo, slotNo]):   (37,  [ 37 37 ] )
+20 (key, [pageNo, slotNo]):   (39,  [ 39 39 ] )
+21 (key, [pageNo, slotNo]):   (42,  [ 42 42 ] )
+22 (key, [pageNo, slotNo]):   (43,  [ 43 43 ] )
+23 (key, [pageNo, slotNo]):   (44,  [ 44 44 ] )
+24 (key, [pageNo, slotNo]):   (45,  [ 45 45 ] )
+25 (key, [pageNo, slotNo]):   (52,  [ 52 52 ] )
+26 (key, [pageNo, slotNo]):   (53,  [ 53 53 ] )
+27 (key, [pageNo, slotNo]):   (58,  [ 58 58 ] )
+28 (key, [pageNo, slotNo]):   (60,  [ 60 60 ] )
+29 (key, [pageNo, slotNo]):   (61,  [ 61 61 ] )
+30 (key, [pageNo, slotNo]):   (65,  [ 65 65 ] )
+31 (key, [pageNo, slotNo]):   (66,  [ 66 66 ] )
+32 (key, [pageNo, slotNo]):   (67,  [ 67 67 ] )
+33 (key, [pageNo, slotNo]):   (68,  [ 68 68 ] )
+34 (key, [pageNo, slotNo]):   (70,  [ 70 70 ] )
+35 (key, [pageNo, slotNo]):   (71,  [ 71 71 ] )
+36 (key, [pageNo, slotNo]):   (72,  [ 72 72 ] )
+37 (key, [pageNo, slotNo]):   (73,  [ 73 73 ] )
+38 (key, [pageNo, slotNo]):   (74,  [ 74 74 ] )
+39 (key, [pageNo, slotNo]):   (79,  [ 79 79 ] )
+40 (key, [pageNo, slotNo]):   (80,  [ 80 80 ] )
+41 (key, [pageNo, slotNo]):   (83,  [ 83 83 ] )
+42 (key, [pageNo, slotNo]):   (85,  [ 85 85 ] )
+43 (key, [pageNo, slotNo]):   (86,  [ 86 86 ] )
+44 (key, [pageNo, slotNo]):   (88,  [ 88 88 ] )
+45 (key, [pageNo, slotNo]):   (89,  [ 89 89 ] )
+46 (key, [pageNo, slotNo]):   (90,  [ 90 90 ] )
+47 (key, [pageNo, slotNo]):   (93,  [ 93 93 ] )
+48 (key, [pageNo, slotNo]):   (94,  [ 94 94 ] )
+49 (key, [pageNo, slotNo]):   (99,  [ 99 99 ] )
+************** END ********
+
+
+
+------------- All Leaf Pages Have Been Printed --------
+
+
+-------------------------- MENU ------------------
+
+
+[0]   Naive delete (new file)
+[1]   Full delete(Default) (new file)
+
+[2]   Print the B+ Tree Structure
+[3]   Print All Leaf Pages
+[4]   Choose a Page to Print
+
+           ---Integer Key (for choices [6]-[14]) ---
+
+[5]   Insert a Record
+[6]   Delete a Record
+[7]   Test1 (new file): insert n records in order
+[8]   Test2 (new file): insert n records in reverse order
+[9]   Test3 (new file): insert n records in random order
+[10]  Test4 (new file): insert n records in random order
+      and delete m records randomly
+[11]  Delete some records
+
+[12]  Initialize a Scan
+[13]  Scan the next Record
+[14]  Delete the just-scanned record
+
+           ---String Key (for choice [15]) ---
+
+[15]  Test5 (new file): insert n records in random order  
+        and delete m records randomly.
+
+[16]  Close the file
+[17]  Open which file (input an integer for the file name): 
+[18]  Destroy which file (input an integer for the file name): 
+
+[19]  Quit!
+Hi, make your choice :2
+
+
+------------- All Leaf Pages Have Been Printed --------
+
+
+-------------------------- MENU ------------------
+
+
+[0]   Naive delete (new file)
+[1]   Full delete(Default) (new file)
+
+[2]   Print the B+ Tree Structure
+[3]   Print All Leaf Pages
+[4]   Choose a Page to Print
+
+           ---Integer Key (for choices [6]-[14]) ---
+
+[5]   Insert a Record
+[6]   Delete a Record
+[7]   Test1 (new file): insert n records in order
+[8]   Test2 (new file): insert n records in reverse order
+[9]   Test3 (new file): insert n records in random order
+[10]  Test4 (new file): insert n records in random order
+      and delete m records randomly
+[11]  Delete some records
+
+[12]  Initialize a Scan
+[13]  Scan the next Record
+[14]  Delete the just-scanned record
+
+           ---String Key (for choice [15]) ---
+
+[15]  Test5 (new file): insert n records in random order  
+        and delete m records randomly.
+
+[16]  Close the file
+[17]  Open which file (input an integer for the file name): 
+[18]  Destroy which file (input an integer for the file name): 
+
+[19]  Quit!
+Hi, make your choice :2
+
+
+
+---------------The B+ Tree Structure---------------
+1     22
+--------------- End ---------------
+
+
+-------------------------- MENU ------------------
+
+
+[0]   Naive delete (new file)
+[1]   Full delete(Default) (new file)
+
+[2]   Print the B+ Tree Structure
+[3]   Print All Leaf Pages
+[4]   Choose a Page to Print
+
+           ---Integer Key (for choices [6]-[14]) ---
+
+[5]   Insert a Record
+[6]   Delete a Record
+[7]   Test1 (new file): insert n records in order
+[8]   Test2 (new file): insert n records in reverse order
+[9]   Test3 (new file): insert n records in random order
+[10]  Test4 (new file): insert n records in random order
+      and delete m records randomly
+[11]  Delete some records
+
+[12]  Initialize a Scan
+[13]  Scan the next Record
+[14]  Delete the just-scanned record
+
+           ---String Key (for choice [15]) ---
+
+[15]  Test5 (new file): insert n records in random order  
+        and delete m records randomly.
+
+[16]  Close the file
+[17]  Open which file (input an integer for the file name): 
+[18]  Destroy which file (input an integer for the file name): 
+
+[19]  Quit!
+Hi, make your choice :
