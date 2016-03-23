@@ -1,4 +1,12 @@
 package iterator;
+/**
+ * 
+ */
+
+/**
+ * @author laxmikant
+ *
+ */
 
 import heap.*;
 import global.*;
