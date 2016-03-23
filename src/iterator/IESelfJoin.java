@@ -33,7 +33,7 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 	private   int[] bit;  // BIT ARRAY
 	 private  AttrType   LeftSortFldType;
 	 private  AttrType   RightSortFldType;
-	 private int pRight=0; // 
+	 private int bTraverse=0; // 
 	private int pIndex=0; 
 	
 	
@@ -255,27 +255,21 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 		// TODO Auto-generated method stub
 		
 		int right_index=0;
-      while(true)
-      {
-    	  if(pRight==p.size())
-    	  {
-    		  pIndex++;
-    	  }
-    	  if( (pIndex<p.size()) && (pRight==p.size()) )
-    		  bit[p.get(pIndex)-1]=1;
-
-    	  while(pIndex<p.size() &&  pRight<p.size())
-           {
-        	   if(bit[pRight]==1)
-        	   {
-        		   Projection.Join(left_tuple, _in1, 
-     					  right_tuple, _in2, 
-     					  Jtuple, perm_mat, nOutFlds);
-     			  return Jtuple;
-     			
-        	   }
-           }
-      }
+		
+		while(pIndex<p.size())
+		{
+			bit[p.get(pIndex)-1]=1;   //set bit array to 1
+			while(bTraverse<p.size())
+			{
+				if(bit[bTraverse]==1)
+				{
+					return 
+				}
+				
+				// Now get next JOIN tuple with checking "1" right to  bit[p.get(pIndex)-1]
+				if
+			}
+		}
       
 		
 		
