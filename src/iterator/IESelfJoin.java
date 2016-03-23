@@ -22,7 +22,7 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 	
 	private AttrType      _in1[],  _in2[];
 	private   int        in1_len, in2_len;
-	private  Iterator  p_i1,  p_i2;             // Pointers to iterators after sorting
+	private  Iterator  L11,L12 , L21,L22;             // Pointers to iterators after sorting
          
 	private   Iterator 	left;
 	private   Iterator  right;
@@ -43,8 +43,13 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 	 private  AttrType   RightSortFldType;
 	 private int bTraverse=0; // 
 	private int pIndex=0; 
+	private int join_column1;
+	private int join_column2;
+	private TupleOrder LOrder, ROrder;
 	
-	
+	private int     sortF1,      sortF2;
+	private int amt_memory;
+	private int tempIndex=0;
 	
 	// Compare Tuple
 	boolean compareTuple(Tuple t1, Tuple t2) throws FieldNumberOutOfBoundException, IOException
@@ -174,15 +179,21 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 		perm_mat = proj_list;
 		nOutFlds = n_out_flds;
 		
-		
+		join_column1=join_col_in1;
+		join_column2=join_col_in2;
+		sortF1=sortFld1Len;
+		sortF2=sortFld2Len;
+		amt_memory=amt_of_mem;
 		
 		//Sort L1
-		 p_i1 = am1;
-	      p_i2 = am2;
+		 L11 = am1;
+	      L21 = am2;
 	      
 	     // Sort L1 in Given order
 		try {
-		  p_i1 = new Sort(in1, (short)len_in1, s1_sizes, am1, join_col_in1,
+		  L11 = new Sort(in1, (short)len_in1, s1_sizes, am1, join_col_in1,
+				  LeftOrder, sortFld1Len, amt_of_mem / 2);
+		  L12 = new Sort(in1, (short)len_in1, s1_sizes, am1, join_col_in1,
 				  LeftOrder, sortFld1Len, amt_of_mem / 2);
 		}catch(Exception e){
 		  throw new SortException (e, "Left Sort failed");
@@ -190,15 +201,17 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 		
 		// Sort L2 in Given order
 		try {
-			  p_i2 = new Sort(in2, (short)len_in2, s2_sizes, am2, join_col_in2,
+			  L21 = new Sort(in2, (short)len_in2, s2_sizes, am2, join_col_in2,
+					  RightOrder, sortFld2Len, amt_of_mem / 2);
+			  L22 = new Sort(in2, (short)len_in2, s2_sizes, am2, join_col_in2,
 					  RightOrder, sortFld2Len, amt_of_mem / 2);
 			}catch(Exception e){
 			  throw new SortException (e, "Right Sort failed");
 			}
 	      
 			int right_index=0;
-			Iterator 	tempLeft = p_i1 ;
-		    Iterator  tempRight= p_i2;
+			Iterator 	tempLeft = L11 ;
+		    Iterator  tempRight= L21;
 		while((right_tuple = tempRight.get_next())!=null)
 		{
 			RightSortFldType=_in2[join_col_in2 - 1];
@@ -210,14 +223,17 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 		
 		
 		/// Computation of Permutation array
-			tempRight = p_i2;
+			tempRight = L21;
 			right_index=0;
 	      while ((left_tuple = tempLeft.get_next()) != null)
 		 {
 	    	  
 	    	  LeftSortFldType=_in1[join_col_in1-1];
 	    	  
-	    	  
+	    	  if(compareTuple(left_tuple, right_tuple)==true)
+	    	  {
+	    		  p.add(right_index+1);
+	    	  }
 	    	  
 	    	  
 	    	  right_index++;
@@ -225,8 +241,8 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 		}
 	      
 		
-		
-		
+		//inititialize bit array to 0.
+		bit= new int[p.size()];
 		//Setting up the final output Tuple size 
 		try {
 			
@@ -245,6 +261,40 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 		
 	} 	
 	
+	public Tuple getRightTuple(int index) throws JoinsException, IndexException, InvalidTupleSizeException, InvalidTypeException, PageNotReadException, TupleUtilsException, PredEvalException, LowMemException, UnknowAttrType, UnknownKeyTypeException, Exception
+	{
+		Tuple tempTuple=null;
+		
+		
+	//	 Iterator tempL1 = new Sort(_in1, (short)in1_len, t1_str_sizescopy, left, join_column1,
+			//	  LOrder, sortF1, amt_memory / 2);
+		while(tempIndex<=index)
+		{
+			tempTuple=L12.get_next();
+			tempIndex++;
+		}
+		return tempTuple;
+		
+		
+	}
+	
+	public Tuple getLeftTuple(int index) throws JoinsException, IndexException, InvalidTupleSizeException, InvalidTypeException, PageNotReadException, TupleUtilsException, PredEvalException, LowMemException, UnknowAttrType, UnknownKeyTypeException, Exception
+	{
+		Tuple tempTuple=null;
+		
+		 Iterator tempL1 = new Sort(_in1, (short)in1_len, t1_str_sizescopy, left, join_column1,
+				  LOrder, sortF1, amt_memory / 2);
+		
+		 while(index>=0)
+		{
+			tempTuple=tempL1.get_next();
+			index--;
+		}
+		return tempTuple;
+		
+		
+	}
+	
 	
 	@Override
 	public Tuple get_next() 
@@ -259,16 +309,25 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 		
 		while(pIndex<p.size())
 		{
-			bit[p.get(pIndex)-1]=1;   //set bit array to 1
+			if(bit[p.get(pIndex)-1]==0)
+			{
+				bit[p.get(pIndex)-1]=1;
+				bTraverse=p.get(pIndex);
+			}
+			
 			while(bTraverse<p.size())
 			{
 				if(bit[bTraverse]==1)
 				{
-					return 
+					Tuple leftTuple= getLeftTuple(p.get(pIndex)-1);
+					Tuple rightTuple=getRightTuple(bTraverse);
+					
+					
+					Projection.Join(leftTuple, _in1, 
+						      rightTuple, _in2, 
+						      Jtuple, perm_mat, nOutFlds);
+					return Jtuple;	      
 				}
-				
-				// Now get next JOIN tuple with checking "1" right to  bit[p.get(pIndex)-1]
-				if
 			}
 		}
       
