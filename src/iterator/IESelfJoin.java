@@ -46,6 +46,26 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 	
 	
 	
+	// Compare Tuple
+	boolean compareTuple(Tuple t1, Tuple t2) throws FieldNumberOutOfBoundException, IOException
+	{
+		for(int i=0;i<4;i++)
+		{
+			if(( t1.getIntFld(0)==t2.getIntFld(0)) 
+					&& ( t1.getIntFld(1)==t2.getIntFld(1))
+					&& ( t1.getIntFld(2)==t2.getIntFld(2))
+					&& ( t1.getIntFld(3)==t2.getIntFld(3))
+					)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+		
+	}
+	
+	
 	/**constructor
 	 *Initialize the two relations which are joined, including relation type,
 	 *@param in1  Array containing field types of R.
@@ -179,11 +199,11 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 			int right_index=0;
 			Iterator 	tempLeft = p_i1 ;
 		    Iterator  tempRight= p_i2;
-		while((left_tuple = tempLeft.get_next())!=null)
+		while((right_tuple = tempRight.get_next())!=null)
 		{
-			LeftSortFldType=_in1[join_col_in1-1];
+			RightSortFldType=_in2[join_col_in2 - 1];
 			
-			// get the value of from left tuple
+			// get the value of from LEFT tuple
 			
 			
 			
@@ -192,40 +212,13 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 		/// Computation of Permutation array
 			tempRight = p_i2;
 			right_index=0;
-	      while ((right_tuple = tempRight.get_next()) != null)
+	      while ((left_tuple = tempLeft.get_next()) != null)
 		 {
 	    	  
-	    	  RightSortFldType=_in2[join_col_in2-1];
+	    	  LeftSortFldType=_in1[join_col_in1-1];
 	    	  
-	    	  switch (RightSortFldType.attrType)
-				{
-				case AttrType.attrInteger:
-						int left_value=left_tuple.getIntFld(join_col_in1-1);
-						int right_value=right_tuple.getIntFld(join_col_in2-1);
-						if(left_value==right_value)
-						{
-							p.add(right_index+1);
-						}
-				  break;
-				case AttrType.attrReal:
-						double left_value_real=left_tuple.getFloFld(join_col_in1-1);
-						double right_value_real=right_tuple.getFloFld(join_col_in2-1);
-						if(left_value_real==right_value_real)
-						{
-							p.add(right_index+1);
-						}
-				  break;
-				case AttrType.attrString:
-						String left_value_string=left_tuple.getStrFld(join_col_in1-1);
-						String right_value_string=right_tuple.getStrFld(join_col_in2-1);
-						if(left_value_string.equals(right_value_string))
-						{
-							p.add(right_index+1);
-						}
-				  break;
-				
-				}
-		 
+	    	  
+	    	  
 	    	  
 	    	  right_index++;
 		}
