@@ -20,16 +20,20 @@ public class FileUtils {
   
   static boolean status = FAIL;
 
-  public static Heapfile createRelationFromFile(String fileName) {
+  public static HeapfileRID createRelationFromFile(String fileName) {
     File file = new File("./"+fileName);
     Heapfile f = null;
+    ArrayList<RID> ridList = new ArrayList<RID>();
+    AttrType[] relationDataTypes = null;
+    short [] stringSizes = null;
+    
     try {
         Scanner fileScanner = new Scanner(file);
 
         String header = fileScanner.nextLine();
         String[] dataTypes = header.split(",");
 
-        AttrType[] relationDataTypes = new AttrType[dataTypes.length];
+        relationDataTypes = new AttrType[dataTypes.length];
 
         int numberOfStringAttributes = 0;
         for(int i = 0 ; i < relationDataTypes.length; i++) {
@@ -47,7 +51,7 @@ public class FileUtils {
             }
         }
 
-        short [] stringSizes = null;
+        stringSizes = null;
         if(numberOfStringAttributes > 0) {
           stringSizes = new short [1];
           for(int i = 0; i < stringSizes.length; i++) {
@@ -68,6 +72,7 @@ public class FileUtils {
 
         RID rid;
     	int size = t.size();
+    	
         boolean status = OK;
         t = new Tuple(size);
         try {
@@ -87,10 +92,12 @@ public class FileUtils {
     			e.printStackTrace();
     		}
     	int count = 0;
+    	
+    	
         while(fileScanner.hasNextLine()) {
           String line = fileScanner.nextLine();
           String[] attributes = line.split(",");
-
+     
           try {
             for(int i = 0; i < attributes.length; i++) {
               switch (dataTypes[i]) {
@@ -110,7 +117,10 @@ public class FileUtils {
 
           try {
         	  	count++;
+      
 				rid = f.insertRecord(t.returnTupleByteArray());
+				
+				ridList.add(rid);
 			} catch (Exception e) {
 				System.out.println("#Records: " +count);
 				System.err.println("*** error in Heapfile.insertRecord() ***");
@@ -128,8 +138,11 @@ public class FileUtils {
     } catch(Exception e) {
       System.out.println("Embarrassing!");
     }
-
-		return f;
+    
+    Object[] objArr = ridList.toArray();
+    HeapfileRID hfrid = new HeapfileRID(f, Arrays.copyOf(objArr, objArr.length, RID[].class), relationDataTypes, stringSizes);
+    
+		return hfrid;
   }
 
   static Query getQueryFromFile(String fileName) {

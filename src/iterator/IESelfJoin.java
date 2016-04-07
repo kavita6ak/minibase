@@ -99,32 +99,6 @@ public class IESelfJoin extends Iterator implements GlobalConst{
 	 *@exception NestedLoopException exception from this class
 	 */
 	
-	/*
-	 * 
-	 *  int     len_in1,                        
-		   short   s1_sizes[],
-		   AttrType    in2[],                
-		   int     len_in2,                        
-		   short   s2_sizes[],
-		   
-		   int     join_col_in1,                
-		   int      sortFld1Len,
-		   int     join_col_in2,                
-		   int      sortFld2Len,
-		   
-		   int     amt_of_mem,               
-		   Iterator     am1,                
-		   Iterator     am2,                
-		   
-		   boolean     in1_sorted,                
-		   boolean     in2_sorted,                
-		   TupleOrder order,
-		   
-		   CondExpr  outFilter[],                
-		   FldSpec   proj_list[],
-		   int       n_out_flds
-	 */
-	
 	
 	public  IESelfJoin(
 			AttrType    in1[],               
